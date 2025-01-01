@@ -16,9 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [AuthController::class, 'loginPage'] )->name('login');
-Route::post('/login', [AuthController::class, 'submitLogin'])->name('submit.login');
+Route::middleware('guest')->group(function() {
+    Route::get('/', [AuthController::class, 'loginPage'] )->name('login');
+    Route::post('/login', [AuthController::class, 'submitLogin'])->name('submit.login');
+});
 
-
-Route::resource('/admin-users', AdminUserController::class);
-Route::resource('/roles', RoleController::class);
+Route::middleware('auth')->group(function() {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::resource('/admin-users', AdminUserController::class);
+    Route::resource('/roles', RoleController::class);
+});

@@ -5,7 +5,7 @@
             <a href="{{ route('roles.index') }}" class="btn btn-primary">Roles and Permissions</a>
         </div>
         <div>
-            <form action="" method="POST">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="btn btn-danger">Logout</button>
             </form>
