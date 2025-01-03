@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 
 class AdminUserController extends Controller
 {
@@ -23,6 +25,10 @@ class AdminUserController extends Controller
      */
     public function create()
     {
+        if (!Gate::allows('permission', 'create_user')) {
+            return "You do have the permission to access";
+        }
+
         $roles = Role::all();
         return view('admin-users.create', compact('roles'));
     }
@@ -32,7 +38,13 @@ class AdminUserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        User::create($request->all());
+        if (!Gate::allows('permission', 'create_user')) {
+            return "You do have the permission to access";
+        }
+
+        $userData = $request->all();
+        $userData['password'] = Hash::make($request->password);
+        User::create($userData);
 
         return redirect()->route('admin-users.index');
     }
@@ -50,6 +62,10 @@ class AdminUserController extends Controller
      */
     public function edit(User $adminUser)
     {
+        if (!Gate::allows('permission', 'update_user')) {
+            return "You do have the permission to access";
+        }
+
         $roles = Role::all();
         $oldRole = $adminUser->role->id;
         return view('admin-users.edit', compact('adminUser', 'roles', 'oldRole'));
@@ -60,6 +76,10 @@ class AdminUserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $adminUser)
     {
+        if (!Gate::allows('permission', 'update_user')) {
+            return "You do have the permission to access";
+        }
+
         $adminUser->update($request->all());
         return redirect()->route('admin-users.index');
     }
@@ -69,6 +89,10 @@ class AdminUserController extends Controller
      */
     public function destroy(User $adminUser)
     {
+        if (!Gate::allows('permission', 'delete_user')) {
+            return "You do have the permission to access";
+        }
+
         $adminUser->delete();
         return redirect()->route('admin-users.index');
     }
